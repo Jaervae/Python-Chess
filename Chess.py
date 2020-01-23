@@ -37,9 +37,10 @@ WHITE_BISHOP = 'whiteBishop'
 WHITE_PAWN = 'whitePawn'
 
 PLAYING_WHITE = True
+WHITE_TURN = True
 
-VERTICAL_ROWS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
-HORIZONTAL_ROWS = ['8', '7', '6', '5', '4', '3', '2', '1']
+HORIZONTAL_ROW = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+VERTICAL_ROW = ['8', '7', '6', '5', '4', '3', '2', '1']
 
 
 class Squares:
@@ -62,7 +63,7 @@ def InitializeSquares():
     yRow = 0
     charterID = 0
     while i > 0:
-        for x in VERTICAL_ROWS:
+        for x in HORIZONTAL_ROW:
             name = x + str(i)
             xPos = (xRow * SQUARE_SIDE)
             yPos = (yRow * SQUARE_SIDE)
@@ -279,8 +280,14 @@ def CheckMove(pawn,squareID):
     vertical = squareID[1]
     color = pawn [:5]
     pawnType = pawn[5:]
+    avaibleSquares = []
     if pawnType == 'Pawn':
-        pass
+        if color == 'white' and PLAYING_WHITE:
+            avaibleSquares.append(HORIZONTAL_ROW[(HORIZONTAL_ROW.index(horizontal) - 1)] + str(int(vertical) + 1))
+            avaibleSquares.append(HORIZONTAL_ROW[HORIZONTAL_ROW.index(horizontal)] + str(int(vertical) + 1))
+            avaibleSquares.append(HORIZONTAL_ROW[HORIZONTAL_ROW.index(horizontal)] + str(int(vertical) + 2))
+            avaibleSquares.append(HORIZONTAL_ROW[(HORIZONTAL_ROW.index(horizontal) + 1)] + str(int(vertical) + 1))
+            print(avaibleSquares)
 
 
 def main(start):
@@ -297,7 +304,7 @@ def main(start):
     preClickedSquare = ""
     selected = ""
     whoseTurn = "White's"
-    whiteTurn = True
+    WHITE_TURN = True
 
     # The clock will be used to control how fast the screen updates
     clock = pygame.time.Clock()
@@ -333,12 +340,13 @@ def main(start):
                 for charter in CHARTER_LIST:
                     if  clickedSquare == preClickedSquare:
                         if charter.squareID == preClickedSquare:
-                            if whiteTurn and charter.pawn[0] == 'w' or not whiteTurn and charter.pawn[0] == 'b':
+                            if WHITE_TURN and charter.pawn[0] == 'w' or not WHITE_TURN and charter.pawn[0] == 'b':
                                 if pawnSelected == "":
                                     print('selected: ' + charter.pawn)
                                     pawnSelected = charter.pawn
                                     squareSelected = clickedSquare
                                     selected = charter
+                                    CheckMove(selected.pawn, selected.squareID)
                                     break
                                 elif pawnSelected != "" and clickedSquare == squareSelected:
                                     pawnSelected = ""
@@ -360,12 +368,11 @@ def main(start):
                                 selected.squareID = clickedSquare
                                 pawnSelected = ""
                                 squareSelected = ""
-                                whiteTurn = not whiteTurn
-                                if whiteTurn:
+                                WHITE_TURN = not WHITE_TURN
+                                if WHITE_TURN:
                                     whoseTurn = "White's"
                                 else:
                                     whoseTurn = "Black's"
-                                CheckMove(selected.pawn, selected.squareID)
                                 break
                         
 
