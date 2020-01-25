@@ -9,6 +9,7 @@ pygame.font.init()
 WHITE = (255, 255, 255)
 DARKBROWN = (89, 54, 17)
 LIGHTBROWN = (253, 198, 139)
+LIGHTGREEN = (199, 255, 192)
 
 # Define some sizes
 SIZE_H = 1000
@@ -17,6 +18,7 @@ SQUARE_SIDE = SIZE_V / 8
 
 SQUARE_LIST = []
 CHARTER_LIST = []
+POSSIBLE_MOVES = []
 
 SIZE = (SIZE_H, SIZE_V)
 SCREEN = pygame.display.set_mode(SIZE)
@@ -268,27 +270,94 @@ def GetSuitablePlace(square):
 
     return int(x), int(y)
 
-def HighlightClickedSquare(squareID):
+def HighlightClickedSquare(squareID, color):
     x,y = GetSuitablePlace(squareID)
-    pygame.draw.line(SCREEN, WHITE, [x, y], [(x + SQUARE_SIDE), y], 5) 
-    pygame.draw.line(SCREEN, WHITE, [x, (y + SQUARE_SIDE)], [(x + SQUARE_SIDE), (y + SQUARE_SIDE)], 5)
-    pygame.draw.line(SCREEN, WHITE, [x, y], [x, (y + SQUARE_SIDE)], 5)
-    pygame.draw.line(SCREEN, WHITE, [(x + SQUARE_SIDE), y], [(x + SQUARE_SIDE), (y + SQUARE_SIDE)], 5)
+    pygame.draw.line(SCREEN, color, [x, y], [(x + SQUARE_SIDE), y], 5) 
+    pygame.draw.line(SCREEN, color, [x, (y + SQUARE_SIDE)], [(x + SQUARE_SIDE), (y + SQUARE_SIDE)], 5)
+    pygame.draw.line(SCREEN, color, [x, y], [x, (y + SQUARE_SIDE)], 5)
+    pygame.draw.line(SCREEN, color, [(x + SQUARE_SIDE), y], [(x + SQUARE_SIDE), (y + SQUARE_SIDE)], 5)
 
 def CheckMove(pawn,squareID):
     horizontal = squareID[0]
     vertical = squareID[1]
     color = pawn [:5]
     pawnType = pawn[5:]
-    avaibleSquares = []
+    if len(POSSIBLE_MOVES) > 0:
+        del POSSIBLE_MOVES[:]
     if pawnType == 'Pawn':
         if color == 'white' and PLAYING_WHITE:
-            avaibleSquares.append(HORIZONTAL_ROW[(HORIZONTAL_ROW.index(horizontal) - 1)] + str(int(vertical) + 1))
-            avaibleSquares.append(HORIZONTAL_ROW[HORIZONTAL_ROW.index(horizontal)] + str(int(vertical) + 1))
-            avaibleSquares.append(HORIZONTAL_ROW[HORIZONTAL_ROW.index(horizontal)] + str(int(vertical) + 2))
-            avaibleSquares.append(HORIZONTAL_ROW[(HORIZONTAL_ROW.index(horizontal) + 1)] + str(int(vertical) + 1))
-            print(avaibleSquares)
+            POSSIBLE_MOVES.append(HORIZONTAL_ROW[HORIZONTAL_ROW.index(horizontal)] + str(int(vertical) + 1))
+            if vertical == '2':
+                POSSIBLE_MOVES.append(HORIZONTAL_ROW[HORIZONTAL_ROW.index(horizontal)] + str(int(vertical) + 2))
 
+            for pawns in CHARTER_LIST:
+                for square in POSSIBLE_MOVES:
+                    if square == pawns.squareID:
+                        if POSSIBLE_MOVES.index(square) == 0:
+                            del POSSIBLE_MOVES[:]
+                        else:
+                            POSSIBLE_MOVES.remove(square)
+                if len(POSSIBLE_MOVES) <= 0:
+                    break
+
+            for pawns in CHARTER_LIST:        
+                if horizontal != 'a' and pawns.squareID == (HORIZONTAL_ROW[(HORIZONTAL_ROW.index(horizontal) - 1)] + str(int(vertical) + 1)):
+                    if pawns.pawn[0] != 'w':
+                        POSSIBLE_MOVES.append(HORIZONTAL_ROW[(HORIZONTAL_ROW.index(horizontal) - 1)] + str(int(vertical) + 1))
+                if horizontal != 'h'and pawns.squareID == (HORIZONTAL_ROW[(HORIZONTAL_ROW.index(horizontal) + 1)] + str(int(vertical) + 1)):
+                    if pawns.pawn[0] != 'w':
+                        POSSIBLE_MOVES.append(HORIZONTAL_ROW[(HORIZONTAL_ROW.index(horizontal) + 1)] + str(int(vertical) + 1))
+            print(str(POSSIBLE_MOVES) + " Whites")
+        
+        elif color == 'black' and PLAYING_WHITE:
+            POSSIBLE_MOVES.append(HORIZONTAL_ROW[HORIZONTAL_ROW.index(horizontal)] + str(int(vertical) - 1))
+            if vertical == '7':
+                POSSIBLE_MOVES.append(HORIZONTAL_ROW[HORIZONTAL_ROW.index(horizontal)] + str(int(vertical) - 2))
+
+            for pawns in CHARTER_LIST:
+                for square in POSSIBLE_MOVES:
+                    if square == pawns.squareID:
+                        if POSSIBLE_MOVES.index(square) == 0:
+                            del POSSIBLE_MOVES[:]
+                        else:
+                            POSSIBLE_MOVES.remove(square)
+                if len(POSSIBLE_MOVES) <= 0:
+                    break
+                
+            for pawns in CHARTER_LIST:        
+                if horizontal != 'h' and pawns.squareID == (HORIZONTAL_ROW[(HORIZONTAL_ROW.index(horizontal) + 1)] + str(int(vertical) - 1)):
+                    if pawns.pawn[0] != 'b':
+                        POSSIBLE_MOVES.append(HORIZONTAL_ROW[(HORIZONTAL_ROW.index(horizontal) + 1)] + str(int(vertical) - 1))
+                if horizontal != 'a'and pawns.squareID == (HORIZONTAL_ROW[(HORIZONTAL_ROW.index(horizontal) - 1)] + str(int(vertical) - 1)):
+                    if pawns.pawn[0] != 'b':
+                        POSSIBLE_MOVES.append(HORIZONTAL_ROW[(HORIZONTAL_ROW.index(horizontal) - 1)] + str(int(vertical) - 1))
+    '''
+    elif pawnType == 'Rook':
+        tempMoveList = []
+        rotation = 0
+        while rotation < 4:
+            x = horizontal
+            y = vertical
+            i = HORIZONTAL_ROW.index(x) + 1
+
+            #Check movement to right
+            if rotation == 0:
+                while i < 8 :
+                    tempMoveList.append(HORIZONTAL_ROW[i] + y)
+                    i += 1
+                for pawn in CHARTER_LIST:
+                    for moves in tempMoveList:
+                        if moves == pawn.squareID:
+                            index = tempMoveList.index(moves)
+                            if color[0] != pawn.pawn[0]: 
+                                index += 1
+                            del tempMoveList[index:]
+            
+            POSSIBLE_MOVES += tempMoveList
+            rotation += 1
+    '''
+        
+    
 
 def main(start):
 
@@ -354,26 +423,27 @@ def main(start):
                                     break
                         elif charter.squareID != preClickedSquare:
                             if clickedSquare != squareSelected and pawnSelected != "":
-                                #Check if already pawn in square
-                                for y in CHARTER_LIST:
-                                    if y.squareID == clickedSquare:
-                                        if y.pawn[0] != selected.pawn[0]:
-                                            print(y.squareID)
-                                            CHARTER_LIST.remove(y)
-                                        else:
-                                            clickedSquare = squareSelected
-                                newX,newY = GetSuitablePlace(clickedSquare)
-                                selected.xPos = newX
-                                selected.yPos = newY
-                                selected.squareID = clickedSquare
-                                pawnSelected = ""
-                                squareSelected = ""
-                                WHITE_TURN = not WHITE_TURN
-                                if WHITE_TURN:
-                                    whoseTurn = "White's"
-                                else:
-                                    whoseTurn = "Black's"
-                                break
+                                #if clickedSquare in POSSIBLE_MOVES: #uncomment if want to move only moves at list
+                                    #Check if already pawn in square
+                                    for y in CHARTER_LIST:
+                                        if y.squareID == clickedSquare:
+                                            if y.pawn[0] != selected.pawn[0]:
+                                                print(y.squareID)
+                                                CHARTER_LIST.remove(y)
+                                            else:
+                                                clickedSquare = squareSelected
+                                    newX,newY = GetSuitablePlace(clickedSquare)
+                                    selected.xPos = newX
+                                    selected.yPos = newY
+                                    selected.squareID = clickedSquare
+                                    pawnSelected = ""
+                                    squareSelected = ""
+                                    WHITE_TURN = not WHITE_TURN
+                                    if WHITE_TURN:
+                                        whoseTurn = "White's"
+                                    else:
+                                        whoseTurn = "Black's"
+                                    break
                         
 
                           
@@ -383,7 +453,11 @@ def main(start):
         for x in CHARTER_LIST:
             SCREEN.blit(x.image,(x.xPos, x.yPos))
         if pawnSelected != "":
-            HighlightClickedSquare(squareSelected)
+            HighlightClickedSquare(squareSelected,WHITE)
+        if pawnSelected != "":
+            for moves in POSSIBLE_MOVES:
+                HighlightClickedSquare(moves, LIGHTGREEN)
+
         textsurface = myfont.render(whoseTurn + " turn", False, (0, 0, 0))
         SCREEN.blit(textsurface,(800,0))
         clock.tick(60)
