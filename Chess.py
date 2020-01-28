@@ -331,17 +331,19 @@ def CheckMove(pawn,squareID):
                 if horizontal != 'a'and pawns.squareID == (HORIZONTAL_ROW[(HORIZONTAL_ROW.index(horizontal) - 1)] + str(int(vertical) - 1)):
                     if pawns.pawn[0] != 'b':
                         POSSIBLE_MOVES.append(HORIZONTAL_ROW[(HORIZONTAL_ROW.index(horizontal) - 1)] + str(int(vertical) - 1))
-    '''
+    
     elif pawnType == 'Rook':
         tempMoveList = []
         rotation = 0
         while rotation < 4:
             x = horizontal
             y = vertical
-            i = HORIZONTAL_ROW.index(x) + 1
+            i = HORIZONTAL_ROW.index(x)
+            tempMoveList = []
 
             #Check movement to right
             if rotation == 0:
+                i += 1
                 while i < 8 :
                     tempMoveList.append(HORIZONTAL_ROW[i] + y)
                     i += 1
@@ -353,9 +355,85 @@ def CheckMove(pawn,squareID):
                                 index += 1
                             del tempMoveList[index:]
             
-            POSSIBLE_MOVES += tempMoveList
+            #Check movement to left
+            if rotation == 1:
+                i -= 1
+                while i >= 0 :
+                    tempMoveList.append(HORIZONTAL_ROW[i] + y)
+                    i -= 1
+                for pawn in CHARTER_LIST:
+                    for moves in tempMoveList:
+                        if moves == pawn.squareID:
+                            index = tempMoveList.index(moves)
+                            if color[0] != pawn.pawn[0]: 
+                                index += 1
+                            del tempMoveList[index:]                
+
+            #Check movement to up
+            if rotation == 2:
+                i = int(vertical) + 1
+                while i < 9 :
+                    tempMoveList.append(x + str(i))
+                    i += 1
+                for pawn in CHARTER_LIST:
+                    for moves in tempMoveList:
+                        if moves == pawn.squareID:
+                            index = tempMoveList.index(moves)
+                            if color[0] != pawn.pawn[0]: 
+                                index += 1
+                            del tempMoveList[index:] 
+
+            #Check movement to down
+            if rotation == 3:
+                i = int(vertical) - 1
+                while i > 0 :
+                    tempMoveList.append(x + str(i))
+                    i -= 1
+                for pawn in CHARTER_LIST:
+                    for moves in tempMoveList:
+                        if moves == pawn.squareID:
+                            index = tempMoveList.index(moves)
+                            if color[0] != pawn.pawn[0]: 
+                                index += 1
+                            del tempMoveList[index:]                                            
+
+            for move in tempMoveList:
+                POSSIBLE_MOVES.append(move)
             rotation += 1
-    '''
+
+    elif pawnType == 'King':
+        horizontalStart = -1
+        horizontalEnd = 1
+        verticalStart = -1
+        verticalEnd = 1
+
+        if horizontal == 'a':
+            horizontalStart = 0
+        elif horizontal == 'h':
+            horizontalEnd = 0
+
+        if vertical == '8':
+            verticalEnd = 0
+        elif vertical == '1':
+            verticalStart = 0
+
+        #Get all moves
+        while verticalStart <= verticalEnd :
+            j = horizontalStart
+            index = HORIZONTAL_ROW.index(horizontal)
+            while j <= horizontalEnd:
+                POSSIBLE_MOVES.append((HORIZONTAL_ROW[(index + j)] + str((int(vertical) + verticalStart))))
+                j += 1
+            verticalStart += 1
+
+        for pawn in CHARTER_LIST:
+            for move in POSSIBLE_MOVES:
+                if  pawn.squareID == move:
+                    if color[0] == pawn.pawn[0]:
+                        POSSIBLE_MOVES.remove(move)
+        print(POSSIBLE_MOVES)
+
+    
         
     
 
