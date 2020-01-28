@@ -13,9 +13,9 @@ LIGHTGREEN = (199, 255, 192)
 RED = (255, 0, 0)
 
 # Define some sizes
-SIZE_H = 1000
-SIZE_V = 800
-SQUARE_SIDE = SIZE_V / 8
+SIZE_H = 1100
+SIZE_V = 900
+SQUARE_SIDE = 100
 
 SQUARE_LIST = []
 CHARTER_LIST = []
@@ -68,8 +68,8 @@ def InitializeSquares():
     while i > 0:
         for x in HORIZONTAL_ROW:
             name = x + str(i)
-            xPos = (xRow * SQUARE_SIDE)
-            yPos = (yRow * SQUARE_SIDE)
+            xPos = 50 + (xRow * SQUARE_SIDE)
+            yPos = 50 + (yRow * SQUARE_SIDE)
             charter = 'none'
             if name[1] == '8' or name[1] == '7' or name[1] == '2' or name[1] == '1':
                 charter = GetPlacement(name)
@@ -165,39 +165,39 @@ def GetClickedSquare(mouseX,mouseY):
     square = ''
   
     #Get matching alphabet
-    if mouseX < 100:
+    if mouseX < 150:
         square += 'a'
-    elif mouseX < 200:
+    elif mouseX < 250:
         square += 'b'
-    elif mouseX < 300:
+    elif mouseX < 350:
         square += 'c'
-    elif mouseX < 400:
+    elif mouseX < 450:
         square += 'd'
-    elif mouseX < 500:
+    elif mouseX < 550:
         square += 'e'
-    elif mouseX < 600:
+    elif mouseX < 650:
         square += 'f'
-    elif mouseX < 700:
+    elif mouseX < 750:
         square += 'g'
-    elif mouseX < 800:
+    elif mouseX < 850:
         square += 'h'
 
     #Get matching number
-    if mouseY < 100:
+    if mouseY < 150:
         square += '8'
-    elif mouseY < 200:
+    elif mouseY < 250:
         square += '7'
-    elif mouseY < 300:
+    elif mouseY < 350:
         square += '6'
-    elif mouseY < 400:
+    elif mouseY < 450:
         square += '5'
-    elif mouseY < 500:
+    elif mouseY < 550:
         square += '4'
-    elif mouseY < 600:
+    elif mouseY < 650:
         square += '3'
-    elif mouseY < 700:
+    elif mouseY < 750:
         square += '2'
-    elif mouseY < 800:
+    elif mouseY < 850:
         square += '1'
 
     return square
@@ -236,38 +236,38 @@ def GetSuitablePlace(square):
     y = square[1]
 
     if x == 'a':
-        x = 0
+        x = 50
     elif x == 'b':
-        x = 100
+        x = 150
     elif x == 'c':
-        x = 200
+        x = 250
     elif x == 'd':
-        x = 300
+        x = 350
     elif x == 'e':
-        x = 400
+        x = 450
     elif x == 'f':
-        x = 500
+        x = 550
     elif x == 'g':
-        x = 600
+        x = 650
     else:
-        x = 700
+        x = 750
 
     if y == '8':
-        y = 0
+        y = 50
     elif y == '7':
-        y = 100
+        y = 150
     elif y == '6':
-        y = 200
+        y = 250
     elif y == '5':
-        y = 300
+        y = 350
     elif y == '4':
-        y = 400
+        y = 450
     elif y == '3':
-        y = 500
+        y = 550
     elif y == '2':
-        y = 600
+        y = 650
     else:
-        y = 700
+        y = 750
 
     return int(x), int(y)
 
@@ -785,7 +785,8 @@ def main(start):
                           
         SCREEN.fill(WHITE)
         pygame.draw.rect(SCREEN, DARKBROWN, [0, 0, SIZE_H - 200, SIZE_V], 0)
-        DrawBoard()
+        image = load_image('chessboard.png')
+        SCREEN.blit(image,(0,0))
         if pawnSelected != "":
             for moves in POSSIBLE_MOVES:
                 HighlightClickedSquare(moves, RED)
@@ -795,7 +796,7 @@ def main(start):
             SCREEN.blit(x.image,(x.xPos, x.yPos))
 
         textsurface = myfont.render(whoseTurn + " turn", False, (0, 0, 0))
-        SCREEN.blit(textsurface,(800,0))
+        SCREEN.blit(textsurface,(900,0))
         clock.tick(60)
         pygame.display.flip()
         
